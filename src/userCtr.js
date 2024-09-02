@@ -1,4 +1,5 @@
 import { UserRepository } from '../database/UserRepository.js'
+import { hashPassword } from './utils/hashPassword.js'
 
 export const getAllUsers = async (ctx) => {
   const users = await UserRepository.getUsers()
@@ -14,7 +15,9 @@ export const getUserById = async (ctx) => {
 export const createUser = async (ctx) => {
   console.log(ctx.request.body)
   const { name, email, password } = ctx.request.body
-  const userSaved = await UserRepository.createUser(name, email, password)
+
+  const passwordHashed = await hashPassword(password)
+  const userSaved = await UserRepository.createUser({ name, email, password: passwordHashed })
 
   ctx.body = { ok: true, userSaved }
 }
